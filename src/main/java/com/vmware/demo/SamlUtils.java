@@ -517,4 +517,13 @@ public final class SamlUtils {
 		return x509Cert.getValue();
 	}
 
+	public static String validate(String metaData) throws SamlException {
+		EntityDescriptorImpl md;
+		try {
+			md = parseMetaData(metaData);
+		} catch (SamlException e) {
+            throw new SamlException("Cannot parse meta data.", e);
+		}
+		return md.getEntityID();
+	}
 }

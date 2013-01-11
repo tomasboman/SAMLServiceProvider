@@ -1,3 +1,3 @@
+This project is a simple SAML Service Provider that runs as a Spring application on top of Cloud Foundry.
 
-This is the first commit of the SAML Service Provider project.
-
+To run in STS, open project and convert to Maven project.  Then add Cloud Foundry runtime in the build path.

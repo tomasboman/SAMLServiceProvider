@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ import com.vmware.demo.db.entity.IdentityProvider;
 public class EditController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EditController.class);
-
+	private static final String ATTRIBUTE_ERROR_MSG = "errmsg";
+	
 	@Autowired
 	private OrganizationHandler organizationHandler;
 	
@@ -55,11 +57,20 @@ public class EditController {
 			idp = organizationHandler.load(id);
 		}
 
-		idp.setHorizonUrl(horizonUrl);
-		idp.setMetaData(metaData);
-
-		organizationHandler.save(idp);
+		// Cleanup input before saving
+		metaData = StringUtils.remove(metaData, '\r');
+		metaData = StringUtils.remove(metaData, '\n');
 		
+		try {
+			horizonUrl = SamlUtils.validate(metaData);
+			if (null != horizonUrl) {
+				idp.setMetaData(metaData);
+				idp.setHorizonUrl(horizonUrl);
+				organizationHandler.save(idp);
+			}
+		} catch (Exception e) {
+			model.addAttribute(ATTRIBUTE_ERROR_MSG, e.getLocalizedMessage());
+		}
 		model.addAttribute("identityProviders", organizationHandler.getAllIdentityProviders());
 		model.addAttribute("spMetaDataUsername", ListController.generateMetaData(request, "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"));
 		model.addAttribute("spMetaDataEmail", ListController.generateMetaData(request, "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"));
