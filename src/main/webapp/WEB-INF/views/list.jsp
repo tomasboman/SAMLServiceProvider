@@ -14,6 +14,8 @@
 	<title>SAML20 Demo Service Provider</title>
 </head>
 <body>
+<p class="error">${errmsg}</p>
+<p class="success">${successmsg}</p>
 <div class="field">
 <h1>Identity Providers</h1>
 </div>
